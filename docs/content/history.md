@@ -39,7 +39,7 @@ channel.
 
 
 [<--# Links -->]: #
-[Contributing]: /contributing/index.md "Contributing page"
+[Contributing]: ./contributing/index.md "Contributing page"
 [martint/s3fs]: https://github.com/martint/s3fs
 [Upplication/Amazon-S3-FileSystem-NIO2]: https://github.com/Upplication/Amazon-S3-FileSystem-NIO2
 [chat]: https://chat.carlspring.org/channel/s3fs-nio-community
