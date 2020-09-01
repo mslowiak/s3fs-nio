@@ -34,4 +34,4 @@ If you want help us out you can check our [Contributing] section for more detail
 
 
 [<--# Links -->]: #
-[Contributing]: /contributing/index.md "Contributing page"
+[Contributing]: ./contributing/index.md "Contributing page"
