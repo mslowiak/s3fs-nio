@@ -43,4 +43,4 @@ We support both JDK 8 and 11.
 
 ## Documentation
 
-Please, check [https://s3fs-nio.carlspring.org][master-docs-link]
+You can check out our documentation [here](https://s3fs.carlspring.org).
