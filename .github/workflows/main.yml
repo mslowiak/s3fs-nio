@@ -1,0 +1,59 @@
+name: Build and test
+on:
+  # Build PRs
+  pull_request: ~
+  # On push event
+  push:
+    # Build only changes pushed into the `master` branch.
+    branches:
+      - github_actions
+    # Ignore documentation changes (Netlify will handle this)
+    paths-ignore:
+      - 'docs/**'
+      - '-*.md'
+      - '-**/*.md'
+
+jobs:
+  build-and-test:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+        java: [ 8, 11.0.3 ]
+    env:
+      EVENT_NAME: ${{ toJSON(github.event_name) }}
+      # format: username:branch
+      PR_HEAD_LABEL: ${{ toJSON(github.event.pull_request.head.label) }}
+      # format: boolean
+      # check https://github.com/carlspring/s3fs-nio/pull/77#issuecomment-686804207
+      IS_EXTERNAL_PR: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name != github.repository }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Setup Java ${{ matrix.java }}
+        uses: actions/setup-java@v1
+        with:
+          java-version: ${{ matrix.java }}
+      - name: Show GitHub context
+        run: echo "$EVENT_NAME $PR_HEAD_LABEL $IS_EXTERNAL_PR"
+      # https://github.com/actions/cache/blob/master/examples.md#java---maven
+      - name: Cache local Maven repository
+        uses: actions/cache@v2
+        with:
+          path: ~/.m2/repository
+          # https://github.com/actions/cache/issues/2#issuecomment-673493515
+          # Example: unix timestamp
+          key: ${{ runner.os }}-maven-${{ secrets.MVN_CACHE_VERSION }}-${{ hashFiles('**/pom.xml') }}
+          restore-keys: |
+            ${{ runner.os }}-maven-${{ secrets.MVN_CACHE_VERSION }}-
+      - name: Maven Version
+        run: mvn --version
+      - name: Build with Maven
+        run: mvn clean install -Pit-s3 -Pjacoco-code-coverage
+        env:
+          S3FS_BUCKET_NAME: ${{ secrets.S3FS_BUCKET_NAME }}
+          S3FS_ACCESS_KEY: ${{ secrets.S3FS_ACCESS_KEY }}
+          S3FS_SECRET_KEY: ${{ secrets.S3FS_SECRET_KEY }}
+          S3FS_REGION: ${{ secrets.S3FS_REGION }}
+          S3FS_PROTOCOL: "https"
