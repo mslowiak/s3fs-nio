@@ -50,7 +50,7 @@ jobs:
       - name: Maven Version
         run: mvn --version
       - name: Build with Maven
-        run: mvn clean install -Pit-s3 -Pjacoco-code-coverage
+        run: mvn clean install -Pit-s3 -Pit-minio -Pjacoco-code-coverage
         env:
           S3FS_BUCKET_NAME: ${{ secrets.S3FS_BUCKET_NAME }}
           S3FS_ACCESS_KEY: ${{ secrets.S3FS_ACCESS_KEY }}
